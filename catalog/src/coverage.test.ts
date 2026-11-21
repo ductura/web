@@ -64,6 +64,8 @@ const PENDING_SCREEN_ENTRIES = new Set([
   "editor/parts/WorkPartsDialog.tsx",
   "editor/history/WorkHistory.tsx", // WEB-9E: awaits work.versions.get in the contract and the toolbar integration.
   "editor/print-export/PrintExportDialog.tsx", // WEB-10E: awaits the export client and toolbar integration.
+  "editor/print-export/docx-download/DocxDownload.tsx", // WEB-1303: part of PrintExportDialog; catalogued with it.
+  "editor/print-export/docx-download/WorkPrintExport.tsx", // WEB-1303: toolbar opener of PrintExportDialog; catalogued with it.
   "editor/submission-package/SubmissionPackage.tsx", // WEB-9E: awaits the toolbar integration.
   "editor/sources/panel/SourceList.tsx",
   "editor/sources/quick-source/QuickSource.tsx",
