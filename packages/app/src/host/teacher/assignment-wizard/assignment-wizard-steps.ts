@@ -27,3 +27,11 @@ export function checkSchedule(draft: AssignmentDraft): WizardErrors {
   if (!parseWordRange(draft.wordMin, draft.wordMax)) errors.wordMax = e.words;
   return errors;
 }
+
+/**
+ * The create body with the practice flag (WEB-1901): sent only when ticked, as a boolean, never a grade or score field.
+ * Until the server contract lists `practice`, a ticked box is rejected by the typed client; an unticked one changes nothing.
+ */
+export function withPractice<T extends object>(body: T, draft: { practice?: boolean }): T & { practice?: true } {
+  return draft.practice === true ? { ...body, practice: true } : body;
+}

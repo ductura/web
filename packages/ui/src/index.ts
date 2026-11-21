@@ -19,6 +19,7 @@ export { BLOCKED_TEXT, SAVE_STATES, saveStateContent, type SaveStateName, type S
 export { Select, type SelectOption, type SelectProps } from "./components/Select";
 export { Skeleton, type SkeletonProps } from "./components/Skeleton";
 export { Tag, type TagProps } from "./components/Tag";
+export { PRACTICE_BADGE_LABEL, PracticeBadge, type PracticeBadgeProps } from "./components/practice-badge";
 export { TextArea, type TextAreaProps } from "./components/TextArea";
 export { TextField, type TextFieldProps } from "./components/TextField";
 export { Timeline, type TimelineProps } from "./components/timeline/Timeline";

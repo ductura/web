@@ -18,7 +18,14 @@ export const wizardHr = {
     words: "Upišite cijele brojeve; najmanji broj riječi ne smije biti veći od najvećeg.",
   },
   reviewHeading: "Pregled",
-  fieldsLabel: { title: "Naslov", due: "Rok", opens: "Početak", words: "Opseg", help: "Pomoć" },
+  fieldsLabel: { title: "Naslov", due: "Rok", opens: "Početak", words: "Opseg", help: "Pomoć", kind: "Vrsta" },
+  practice: {
+    label: "Probni zadatak (bez ocjene)",
+    hint: "Student i nastavnik vide oznaku „Probni”. Probni zadatak nema polje ocjene.",
+    off: "Zadatak se vrednuje kao i obično.",
+  },
   helpOn: "Prema pravilima kolegija",
+  practiceOn: "Probni zadatak, bez ocjene",
+  practiceOff: "Redovni zadatak",
   helpOff: "Bez AI pomoći",
 } as const;

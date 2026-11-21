@@ -1,6 +1,6 @@
 "use client";
 
-import { Select, TextArea, TextField, Wizard, type WizardOutcome, type WizardStep } from "@ductura/ui";
+import { Checkbox, Select, TextArea, TextField, Wizard, type WizardOutcome, type WizardStep } from "@ductura/ui";
 import { useRef } from "react";
 
 import {
@@ -13,12 +13,15 @@ import { formatDateTimeHr } from "@/lib/i18n/hr";
 import { wordRangeHr } from "@/lib/i18n/length-line";
 import { messagesHr as t } from "@/lib/i18n/messages.hr";
 
-import { checkBasics, checkSchedule } from "./assignment-wizard-steps";
+import { checkBasics, checkSchedule, withPractice } from "./assignment-wizard-steps";
 import { ImportAllowedField } from "./ImportAllowedField";
 import { wizardHr as w } from "./messages.hr";
 
 type Course = Pick<TeacherCourse, "id" | "name" | "academicYear" | "aiPolicy">;
-type Publish = (courseId: string, body: NonNullable<ReturnType<typeof assignmentBody>>, requestKey: string) => Promise<AssignmentCreation>;
+/** `practice` is the practice-assignment flag (WEB-1901); the server stores it and returns it, no grade field exists for it. */
+type PracticeBody = NonNullable<ReturnType<typeof assignmentBody>> & { practice?: true };
+type Publish = (courseId: string, body: PracticeBody, requestKey: string) => Promise<AssignmentCreation>;
+type WizardDraft = AssignmentDraft & { practice?: boolean };
 
 const a = t.teacher.assignment;
 const workOptions = (["seminar_paper", "essay"] as const).map((value) => ({ value, label: a.workTypes[value] }));
@@ -35,7 +38,7 @@ export default function AssignmentWizard({ course, publish = publishAssignment }
   const request = useRef<{ body: string; key: string } | null>(null);
   const courseProhibits = course.aiPolicy === "prohibited";
 
-  const steps: WizardStep<AssignmentDraft>[] = [
+  const steps: WizardStep<WizardDraft>[] = [
     {
       id: "basics", label: w.steps.basics, validate: checkBasics,
       render: ({ values, errors, set }) => (
@@ -46,6 +49,8 @@ export default function AssignmentWizard({ course, publish = publishAssignment }
             onChange={(event) => set("workType", event.target.value as WorkType)} />
           <TextArea label={setup.description} rows={4} value={values.instructions} maxLength={20_000}
             error={errors.instructions} onChange={(event) => set("instructions", event.target.value)} />
+          <Checkbox label={w.practice.label} checked={values.practice === true} hint={values.practice === true ? w.practice.hint : w.practice.off}
+            onChange={(event) => set("practice", event.target.checked)} />
         </>
       ),
     },
@@ -98,6 +103,7 @@ export default function AssignmentWizard({ course, publish = publishAssignment }
           <section aria-labelledby="wizard-pregled">
             <h3 id="wizard-pregled">{w.reviewHeading}</h3>
             <dl>
+              <dt>{w.fieldsLabel.kind}</dt><dd>{values.practice === true ? w.practiceOn : w.practiceOff}</dd>
               <dt>{w.fieldsLabel.title}</dt><dd>{values.title.trim()}</dd>
               <dt>{w.fieldsLabel.opens}</dt><dd>{formatDateTimeHr(values.opensAt)}</dd>
               <dt>{w.fieldsLabel.due}</dt><dd>{formatDateTimeHr(values.dueAt)}</dd>
@@ -111,10 +117,10 @@ export default function AssignmentWizard({ course, publish = publishAssignment }
     },
   ];
 
-  async function finish(draft: AssignmentDraft): Promise<WizardOutcome> {
+  async function finish(draft: WizardDraft): Promise<WizardOutcome> {
     const body = assignmentBody(draft, course.aiPolicy);
     if (!body) return { ok: false, error: a.errors.invalid };
-    const aiBody = courseProhibits || body.aiPurposes.length === 0 ? body : { ...body, aiPolicy: course.aiPolicy };
+    const aiBody = withPractice(courseProhibits || body.aiPurposes.length === 0 ? body : { ...body, aiPolicy: course.aiPolicy }, draft);
     const serialized = JSON.stringify(aiBody);
     // One retry key per body, so a repeated click after an unclear reply cannot create a second assignment.
     if (request.current?.body !== serialized) request.current = { body: serialized, key: crypto.randomUUID() };

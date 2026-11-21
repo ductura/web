@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import type { AssignmentDraft } from "@/components/teacher/assignment-create";
 
 import AssignmentWizard from "./AssignmentWizard";
-import { checkBasics, checkSchedule } from "./assignment-wizard-steps";
+import { checkBasics, checkSchedule, withPractice } from "./assignment-wizard-steps";
 import { wizardHr } from "./messages.hr";
 
 const draft: AssignmentDraft = {
@@ -34,5 +34,17 @@ describe("assignment wizard step checks (WEB-1403)", () => {
     expect(html).toContain("Izmišljeni kolegij");
     expect(html).toContain(wizardHr.steps.basics);
     expect(html).not.toContain(wizardHr.labels.back);
+  });
+
+  it("sends the practice flag only when ticked, as a boolean and never adds a grade field (WEB-1901)", () => {
+    expect(withPractice({ title: "x" }, { practice: true })).toEqual({ title: "x", practice: true });
+    expect(withPractice({ title: "x" }, {})).toEqual({ title: "x" });
+    expect(Object.keys(withPractice({ title: "x" }, { practice: true })).join()).not.toMatch(/grade|score|ocjen/i);
+  });
+
+  it("offers the choice on the first step with the agreed wording", () => {
+    const html = renderToStaticMarkup(createElement(AssignmentWizard, { course: { id: "c1", name: "Izmišljeni kolegij", academicYear: "2026./2027.", aiPolicy: "prohibited" } }));
+    expect(html).toContain("Probni zadatak (bez ocjene)");
+    expect(html).toContain(wizardHr.practice.off);
   });
 });

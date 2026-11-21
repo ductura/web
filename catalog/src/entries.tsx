@@ -34,6 +34,7 @@ import { assistantBudgetEntries } from "./assistant-budget";
 import { declarationAiEntries } from "./declaration-ai";
 import { teacherAiAttachmentsEntries } from "./teacher-ai-attachments";
 import { accessDeniedEntries } from "./access-denied";
+import { practiceBadgeEntries } from "./practice-badge";
 import { provenanceShareEntries } from "./provenance-share";
 import { problemReportEntries } from "./problem-report";
 import { assistantTransferEntries } from "./assistant-transfer";
@@ -265,6 +266,7 @@ export const ENTRIES = {
   ...declarationAiEntries,
   ...teacherAiAttachmentsEntries,
   ...accessDeniedEntries,
+  ...practiceBadgeEntries,
   ...provenanceShareEntries,
   ...problemReportEntries,
   CheckActionList: {
